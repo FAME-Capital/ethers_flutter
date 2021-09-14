@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ethers_example">
+    package="au.com.famecapital.flutter.ethers_example">
    <application
         android:label="ethers_example"
         android:icon="@mipmap/ic_launcher">

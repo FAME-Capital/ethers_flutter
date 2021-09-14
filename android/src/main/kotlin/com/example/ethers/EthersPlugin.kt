@@ -1,4 +1,4 @@
-package com.example.ethers
+package au.com.famecapital.flutter.ethers
 
 import androidx.annotation.NonNull
 
