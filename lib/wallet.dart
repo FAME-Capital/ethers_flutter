@@ -14,7 +14,7 @@ class Wallet {
   /// Create a random wallet
   ///
   /// Returns a new [Wallet] with a random private key. You can provide optional
-  /// creation options with `extraEntropy` as a hex string that provides some
+  /// creation options with [extraEntropy] as a hex string that provides some
   /// extra entropy to the randomization.
   ///
   /// ```
