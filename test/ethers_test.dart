@@ -1,12 +1,14 @@
+import 'package:ethers/ethers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ethers/ethers.dart';
-
 void main() {
-  test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+  });
+
+  test('Creating random wallet', () async {
+    final wallet = await Wallet.createRandom();
+    expect(wallet.address.startsWith('0x'), true);
+    expect(wallet.address.length, 42);
   });
 }
