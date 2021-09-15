@@ -9,7 +9,10 @@ import 'package:ethers/src/types.dart';
 import 'package:flutter_js/extensions/handle_promises.dart';
 
 class Wallet {
-  Wallet({required this.address});
+  Wallet({
+    required this.address,
+    required this.publicKey,
+  });
 
   /// Create a random wallet
   ///
@@ -37,7 +40,8 @@ class Wallet {
 
       // Return from evaluation
       JSON.stringify({
-        address: wallet.address
+        address: wallet.address,
+        publicKey: wallet.publicKey
       });
     ''');
 
@@ -48,14 +52,15 @@ class Wallet {
     final json = jsonDecode(result.stringResult);
     return Wallet(
       address: json['address'],
+      publicKey: json['publicKey'],
     );
   }
 
   /// Create an instance from an encrypted JSON wallet.
   ///
   /// Returns a decrypted wallet from given encrypted JSON and password. Please
-  /// note that the [json] should be passed as a JSON encoded `String`. 
-  /// 
+  /// note that the [json] should be passed as a JSON encoded `String`.
+  ///
   /// See original documentation
   ///   - https://docs.ethers.io/v5/api/signer/#Wallet-fromEncryptedJson
   static Future<Wallet> fromEncryptedJson({
@@ -78,8 +83,9 @@ class Wallet {
         (percent) => sendMessage("onProgress", JSON.stringify(percent || 0))
       )
       .then((wallet) => ({
-            address: wallet.address,
-          })
+          address: wallet.address,
+          publicKey: wallet.publicKey
+        })
       );
     ''';
 
@@ -93,8 +99,10 @@ class Wallet {
 
     return Wallet(
       address: walletJson['address'],
+      publicKey: walletJson['publicKey'],
     );
   }
 
   final String address;
+  final String publicKey;
 }

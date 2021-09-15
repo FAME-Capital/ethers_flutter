@@ -11,18 +11,24 @@ void main() {
       final wallet = await Wallet.createRandom();
       expect(wallet.address.startsWith('0x'), true);
       expect(wallet.address.length, 42);
+      expect(wallet.publicKey.startsWith('0x'), true);
+      expect(wallet.publicKey.length, 132);
     });
 
     test('Create random wallet with extra entropy', () async {
       final wallet = await Wallet.createRandom(extraEntropy: '0xbaadf00d');
       expect(wallet.address.startsWith('0x'), true);
       expect(wallet.address.length, 42);
+      expect(wallet.publicKey.startsWith('0x'), true);
+      expect(wallet.publicKey.length, 132);
     });
 
     test('Create random wallet with empty entropy', () async {
       final wallet = await Wallet.createRandom(extraEntropy: null);
       expect(wallet.address.startsWith('0x'), true);
       expect(wallet.address.length, 42);
+      expect(wallet.publicKey.startsWith('0x'), true);
+      expect(wallet.publicKey.length, 132);
     });
 
     test(
@@ -37,6 +43,8 @@ void main() {
 
         expect(wallet.address.startsWith('0x'), true);
         expect(wallet.address.length, 42);
+        expect(wallet.publicKey.startsWith('0x'), true);
+        expect(wallet.publicKey.length, 132);
       },
       // This function takes long time in flutter_js javascript runtime function
       // for `handlePromise`. Not sure what's happening but need extra timeout.
