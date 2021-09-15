@@ -66,7 +66,7 @@ class Wallet {
         "$password",
         (percent) => sendMessage("onProgress", JSON.stringify(percent || 0))
       )
-      .then((wallet) => JSON.stringify({
+      .then((wallet) => ({
             address: wallet.address,
           })
       );
