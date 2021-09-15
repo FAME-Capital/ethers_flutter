@@ -1,3 +1,3 @@
 ## 0.0.1
-
-* TODO: Describe initial release.
+Initial package code.
+* Adding `Wallet.createRandom()` as a PoC
