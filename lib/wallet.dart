@@ -3,8 +3,10 @@ library ethers;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:ethers/error.dart';
 import 'package:ethers/src/javascript_runtime.dart';
 import 'package:ethers/src/types.dart';
+import 'package:flutter_js/extensions/handle_promises.dart';
 
 class Wallet {
   Wallet({required this.address});
@@ -35,9 +37,51 @@ class Wallet {
       });
     ''');
 
+    if (result.isError) {
+      throw JavascriptError(result.stringResult);
+    }
+
     final json = jsonDecode(result.stringResult);
     return Wallet(
       address: json['address'],
+    );
+  }
+
+  static Future<Wallet> fromEncryptedJson({
+    required String json,
+    required String password,
+    ProgressCallback? onProgress,
+  }) async {
+    final jsRuntime = await getEthersJsRuntime();
+
+    jsRuntime.onMessage('onProgress', (pct) {
+      if (onProgress != null) {
+        onProgress(pct);
+      }
+    });
+
+    final js = '''
+      global.ethers.Wallet.fromEncryptedJson(
+        `$json`,
+        "$password",
+        (percent) => sendMessage("onProgress", JSON.stringify(percent || 0))
+      )
+      .then((wallet) => JSON.stringify({
+            address: wallet.address,
+          })
+      );
+    ''';
+
+    final asyncResult = await jsRuntime.evaluateAsync(js);
+    if (asyncResult.isError) {
+      throw JavascriptError(asyncResult.stringResult);
+    }
+
+    final resolvedPromise = await jsRuntime.handlePromise(asyncResult);
+    final walletJson = jsonDecode(resolvedPromise.stringResult);
+
+    return Wallet(
+      address: walletJson['address'],
     );
   }
 
