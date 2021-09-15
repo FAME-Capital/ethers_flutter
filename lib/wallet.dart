@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:ethers/src/javascript_runtime.dart';
+import 'package:ethers/src/types.dart';
 
 class Wallet {
   Wallet({required this.address});
@@ -20,30 +21,24 @@ class Wallet {
   ///
   /// See original documentation
   ///  - https://docs.ethers.io/v5/api/signer/#Wallet-createRandom
-  static Future<Wallet> createRandom([Map<String, dynamic>? options]) async {
+  static Future<Wallet> createRandom([JsonMap? options]) async {
     final jsRuntime = await getEthersJsRuntime();
-    final walletCompleter = Completer<Wallet>();
 
-    jsRuntime.onMessage('onWalletCreated', (json) {
-      walletCompleter.complete(
-        Wallet(
-          address: json['address'],
-        ),
-      );
-    });
+    final opts = jsonEncode(options ?? {});
 
-    final opts = json.encode(options ?? {});
-
-    jsRuntime.evaluate('''
+    final result = jsRuntime.evaluate('''
       const wallet = global.ethers.Wallet.createRandom($opts);
 
-      const walletJson = {
+      // Return from evaluation
+      JSON.stringify({
         address: wallet.address
-      };
-      sendMessage("onWalletCreated", JSON.stringify(walletJson));
+      });
     ''');
 
-    return walletCompleter.future;
+    final json = jsonDecode(result.stringResult);
+    return Wallet(
+      address: json['address'],
+    );
   }
 
   final String address;
