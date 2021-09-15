@@ -22,14 +22,19 @@ class EthersPlugin: FlutterPlugin, MethodCallHandler {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    if (call.method == "getPlatformVersion") {
-      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-    } else {
-      result.notImplemented()
+    when (call.method) {
+      "Wallet.createRandom" -> handleWalletCreateRandom(call, result)
+
+      else -> result.notImplemented()
     }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
+  }
+
+  private fun handleWalletCreateRandom(@NonNull call: MethodCall, @NonNull result: Result) {
+    AppEventsLogger.clearUserData()
+    result.success(null)
   }
 }
