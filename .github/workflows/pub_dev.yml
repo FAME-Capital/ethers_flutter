@@ -4,12 +4,44 @@ on:
     branches:   
       - main
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          channel: "stable"
+
+      - name: Get Flutter cache directory path
+        id: pub-cache-dir-path
+        run: |
+          echo "::set-output name=dir::$FLUTTER_HOME/.pub-cache"
+
+      - name: Activate Flutter Pub Packages Cache
+        uses: actions/cache@v1
+        id: pub-cache
+        with:
+          path: ${{ steps.pub-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - run: flutter pub get
+
+      - run: flutter test --test-randomize-ordering-seed=$RANDOM
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
     container:
       image:  google/dart:latest
     steps:
     - uses: actions/checkout@v1
+
     - name: Setup credentials
       run: | 
         mkdir -p ~/.pub-cache 
@@ -22,5 +54,22 @@ jobs:
           "expiration": 1570721159347
         }
         EOF
+
+    - name: Get cache directory path
+      id: pub-cache-dir-path
+      run: |
+        echo "::set-output name=dir::$FLUTTER_HOME/.pub-cache"
+
+    - name: Activate Pub Packages Cache
+      uses: actions/cache@v1
+      id: pub-cache
+      with:
+        path: ${{ steps.pub-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pub-
+
+    - run: pub get
+
     - name: Publish package
       run: pub publish -f
