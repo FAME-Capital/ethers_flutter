@@ -18,15 +18,19 @@ class Wallet {
   /// extra entropy to the randomization.
   ///
   /// ```
-  ///   final wallet = await Wallet.createRandom({'extraEntropy': '0xbaadf00d'});
+  ///   final wallet = await Wallet.createRandom(extraEntropy: '0xbaadf00d');
   /// ```
   ///
   /// See original documentation
-  ///  - https://docs.ethers.io/v5/api/signer/#Wallet-createRandom
-  static Future<Wallet> createRandom([JsonMap? options]) async {
+  ///   - https://docs.ethers.io/v5/api/signer/#Wallet-createRandom
+  static Future<Wallet> createRandom({String? extraEntropy}) async {
     final jsRuntime = await getEthersJsRuntime();
 
-    final opts = jsonEncode(options ?? {});
+    final opts = extraEntropy == null
+        ? null
+        : jsonEncode({
+            extraEntropy: extraEntropy,
+          });
 
     final result = jsRuntime.evaluate('''
       const wallet = global.ethers.Wallet.createRandom($opts);
@@ -47,6 +51,13 @@ class Wallet {
     );
   }
 
+  /// Create an instance from an encrypted JSON wallet.
+  ///
+  /// Returns a decrypted wallet from given encrypted JSON and password. Please
+  /// note that the [json] should be passed as a JSON encoded `String`. 
+  /// 
+  /// See original documentation
+  ///   - https://docs.ethers.io/v5/api/signer/#Wallet-fromEncryptedJson
   static Future<Wallet> fromEncryptedJson({
     required String json,
     required String password,
