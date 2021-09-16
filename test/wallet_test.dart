@@ -41,13 +41,14 @@ void main() {
         final wallet =
             await Wallet.fromEncryptedJson(json: json, password: password);
 
-        expect(wallet.address.startsWith('0x'), true);
-        expect(wallet.address.length, 42);
+        expect(
+          wallet.address.toLowerCase(),
+          '0xd0838a7daccaa2714223205d97deeb6e69d61881',
+        );
         expect(wallet.publicKey.startsWith('0x'), true);
         expect(wallet.publicKey.length, 132);
       },
-      // This function takes long time in flutter_js javascript runtime function
-      // for `handlePromise`. Not sure what's happening but need extra timeout.
+      // This function takes long time for decrypting the wallet.
       timeout: const Timeout(
         Duration(minutes: 5),
       ),
