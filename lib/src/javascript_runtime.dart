@@ -1,13 +1,20 @@
- import 'package:ethers/src/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_js/flutter_js.dart';
 
 Future<JavascriptRuntime> getEthersJsRuntime() async {
-    final JavascriptRuntime jsRuntime = getJavascriptRuntime();
-    jsRuntime.evaluate('var window = global = globalThis;');
+  final JavascriptRuntime jsRuntime = getJavascriptRuntime();
+  jsRuntime.evaluate('var window = global = globalThis;');
 
-    jsRuntime.evaluate(await rootBundle.loadString(assetCryptoShimJs));
-    jsRuntime.evaluate(await rootBundle.loadString(assetEthersJs));
+  // JS script assets to load
+  const scriptAssets = [
+    'packages/ethers/assets/js/crypto-shim.js',
+    'packages/ethers/assets/js/ethers-5.2.umd.min.js',
+  ];
 
-    return jsRuntime;
+  for (final scriptAsset in scriptAssets) {
+    final js = await rootBundle.loadString(scriptAsset);
+    jsRuntime.evaluate(js);
   }
+
+  return jsRuntime;
+}
