@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:ethers/error.dart';
 import 'package:ethers/src/javascript_runtime.dart';
-import 'package:ethers/src/types.dart';
+import 'package:ethers/types.dart';
 import 'package:flutter_js/extensions/handle_promises.dart';
 
 class Wallet {

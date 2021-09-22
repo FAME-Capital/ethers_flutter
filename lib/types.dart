@@ -1,0 +1,1 @@
+typedef ProgressCallback = void Function(double);
