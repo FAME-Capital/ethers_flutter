@@ -72,7 +72,7 @@ class Wallet {
 
     jsRuntime.onMessage('onProgress', (pct) {
       if (onProgress != null) {
-        onProgress(pct);
+        onProgress(pct * 1.0);
       }
     });
 
@@ -80,7 +80,7 @@ class Wallet {
       global.ethers.Wallet.fromEncryptedJson(
         `$json`,
         "$password",
-        (percent) => sendMessage("onProgress", JSON.stringify(percent || 0))
+        (percent) => sendMessage("onProgress", JSON.stringify(percent))
       )
       .then((wallet) => ({
           address: wallet.address,
