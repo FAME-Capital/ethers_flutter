@@ -82,11 +82,10 @@ class Wallet {
         "$password",
         (percent) => sendMessage("onProgress", JSON.stringify(percent))
       )
-      .then((wallet) => ({
+      .then((wallet) => JSON.stringify({
           address: wallet.address,
           publicKey: wallet.publicKey
-        })
-      );
+        }));
     ''';
 
     final asyncResult = await jsRuntime.evaluateAsync(js);
@@ -95,7 +94,10 @@ class Wallet {
     }
 
     final resolvedPromise = await jsRuntime.handlePromise(asyncResult);
-    final walletJson = jsonDecode(resolvedPromise.stringResult);
+    final result = resolvedPromise.stringResult;
+    final walletJson = result.contains('\\"')
+        ? jsonDecode(jsonDecode(result)) // HACK: Double encoded on mobile
+        : jsonDecode(result);
 
     return Wallet(
       address: walletJson['address'],
