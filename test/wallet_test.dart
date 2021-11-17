@@ -8,6 +8,33 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
     });
 
+    test(
+      'Create wallet for privateKey',
+      () async {
+        const privateKey =
+            '0x00a1089d5f537a80302482276017fed68617c7830472f660301146c6c6a2f9b3fe';
+
+        final startTime = DateTime.now();
+
+        final wallet = await Wallet.forPrivateKey(privateKey: privateKey);
+
+        debugPrint(
+          'Time to create wallet: ${DateTime.now().difference(startTime)}',
+        );
+
+        expect(
+          wallet.address.toLowerCase(),
+          '0x36b31f1126417acbbc95d19b0caf577efd648e49',
+        );
+        expect(wallet.publicKey.startsWith('0x'), true);
+        expect(wallet.publicKey.length, 132);
+      },
+      // This function takes long time for decrypting the wallet.
+      timeout: const Timeout(
+        Duration(minutes: 5),
+      ),
+    );
+
     test('Create random wallet', () async {
       final wallet = await Wallet.createRandom();
       expect(wallet.address.startsWith('0x'), true);

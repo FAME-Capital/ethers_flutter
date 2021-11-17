@@ -14,6 +14,40 @@ class Wallet {
     required this.publicKey,
   });
 
+  /// Create a new Wallet for a provided privateKey
+  ///
+  /// Returns a new [Wallet] for a provided private key.
+  ///
+  /// ```
+  ///   final wallet = await Wallet.forPrivateKey(privateKey: '0xbaadf00d');
+  /// ```
+  ///
+  /// See original documentation
+  ///   - https://docs.ethers.io/v5/api/signer/#Wallet-constructor
+  static Future<Wallet> forPrivateKey({required String privateKey}) async {
+    final jsRuntime = await getEthersJsRuntime();
+
+    final result = jsRuntime.evaluate('''
+      const wallet = new global.ethers.Wallet('$privateKey');
+      
+      // Return from evaluation
+      JSON.stringify({
+        address: wallet.address,
+        publicKey: wallet.publicKey
+      });
+    ''');
+
+    if (result.isError) {
+      throw JavascriptError(result.stringResult);
+    }
+
+    final json = jsonDecode(result.stringResult);
+    return Wallet(
+      address: json['address'],
+      publicKey: json['publicKey'],
+    );
+  }
+
   /// Create a random wallet
   ///
   /// Returns a new [Wallet] with a random private key. You can provide optional
